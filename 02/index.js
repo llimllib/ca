@@ -1,6 +1,7 @@
 class GameOfLife {
-  constructor(ctx, width, height) {
-    this.ctx = ctx;
+  constructor(canvas, width, height) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
     this.width = width;
     this.height = height;
     this.cellsize = 5;
@@ -91,9 +92,13 @@ class GameOfLife {
   }
 
   handleMouseDown(evt) {
-    const row = Math.floor(evt.clientY / this.cellsize);
-    const col = Math.floor(evt.clientX / this.cellsize);
-    console.log(row, col);
+    // https://stackoverflow.com/a/18053642/42559
+    const rect = this.canvas.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
+
+    const row = Math.floor(y / this.cellsize);
+    const col = Math.floor(x / this.cellsize);
     this.isMouseDown = true;
 
     this.ctx.fillRect(
@@ -108,14 +113,17 @@ class GameOfLife {
   }
 
   handleMouseMove(evt) {
-    console.log(this.isMouseDown);
     if (!this.isMouseDown) {
       return;
     }
 
-    const row = Math.floor(evt.clientY / this.cellsize);
-    const col = Math.floor(evt.clientX / this.cellsize);
-    console.log(row, col);
+    // https://stackoverflow.com/a/18053642/42559
+    const rect = this.canvas.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
+
+    const row = Math.floor(y / this.cellsize);
+    const col = Math.floor(x / this.cellsize);
 
     this.ctx.fillStyle = "#fa38c0";
     this.ctx.fillRect(
@@ -138,9 +146,8 @@ window.addEventListener("DOMContentLoaded", (_) => {
   const canvas = document.getElementById("canvas");
   var width = canvas.offsetWidth;
   var height = canvas.offsetHeight;
-  const ctx = canvas.getContext("2d");
 
-  const g = new GameOfLife(ctx, width, height);
+  const g = new GameOfLife(canvas, width, height);
 
   //canvas.addEventListener("click", g.handleClick);
   canvas.addEventListener("mousedown", g.handleMouseDown);
